@@ -518,3 +518,6 @@ body{background-image:url(img/hex.svg);background-size:69.28px 120px}
 .red-end .c-tl{top:16px;left:-24px}
 .red-end .c-br{bottom:20px;right:-24px}
 .order>.wrap,.site-footer>.wrap{position:relative;z-index:2}
+
+/* loading screen: just the logo and its line of text */
+.loader::before,.loader::after,.ripples{display:none}
