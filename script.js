@@ -18,7 +18,7 @@
         try { sessionStorage.setItem('seen', '1'); } catch (e) {}
         setTimeout(removeLoader, 800);
       };
-      var ready = function () { setTimeout(finish, Math.max(0, 2300 - (Date.now() - start))); };
+      var ready = function () { setTimeout(finish, Math.max(0, 1000 - (Date.now() - start))); };
       if (document.readyState === 'complete') ready(); else window.addEventListener('load', ready);
       setTimeout(finish, 5000);
     }
@@ -50,12 +50,12 @@
       if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
       var u; try { u = new URL(a.href, location.href); } catch (x) { return; }
       if (u.origin !== location.origin || norm2(u.pathname) === norm2(location.pathname)) return;
-      if (reduce || leaving) return;
+      if (reduce || leaving || window.innerWidth <= 860) return;   // no delayed transition on phones
       e.preventDefault(); leaving = true;
       var label = (a.querySelector('.brand-name') ? a.querySelector('.brand-name').textContent : a.textContent).replace(/\s+/g, ' ').trim();
       ptLabel.textContent = label.length < 40 ? label : '';
       pt.classList.remove('gone', 'leave');
-      ptImg.src = 'img/transition.gif?t=' + Date.now();   // restart the animation
+      ptImg.src = '/img/transition.gif?t=' + Date.now();   // restart the animation
       void pt.offsetWidth;
       pt.classList.add('show');
       nav.classList.remove('open');
@@ -80,48 +80,31 @@
     if (e.target.tagName === 'A') { nav.classList.remove('open'); btn.setAttribute('aria-expanded', false); }
   });
 
-  // ---- language (Arabic default, English via toggle) ----
-  var EN = window.I18N_EN, META = window.I18N_META;
-  var lang = 'ar';
-  var norm = function (s) { return s.replace(/\s+/g, ' ').trim(); };
-  var nodes = [], claimed = [];
-  var all = document.body.querySelectorAll('*');
-  for (var i = 0; i < all.length; i++) {
-    var el = all[i];
-    if (el.tagName === 'SCRIPT' || el.id === 'lang') continue;
-    ['alt', 'aria-label'].forEach(function (a) {
-      var v = el.getAttribute(a);
-      if (v && EN[v]) nodes.push({ el: el, attr: a, ar: v, en: EN[v] });
-    });
-    if (claimed.some(function (c) { return c.contains(el); })) continue;
-    var key = norm(el.innerHTML);
-    if (key && EN[key]) { nodes.push({ el: el, ar: el.innerHTML, en: EN[key] }); claimed.push(el); }
-  }
+  // ---- language: each language has its own page (/ and /en/); the button switches between them ----
+  var lang = root.getAttribute('data-lang') === 'en' ? 'en' : 'ar';
+  var COPY = {
+    ar: function (y) { return '© ' + y + ' دار الحلويات القوقازية · عمّان، الأردن'; },
+    en: function (y) { return '© ' + y + ' Caucasus Sweets Home · Amman, Jordan'; }
+  };
   var langBtn = document.getElementById('lang');
   var lbPrev = document.querySelector('.lb-p'), lbNext = document.querySelector('.lb-n');
-  function setLang(l, save) {
-    lang = l;
-    nodes.forEach(function (n) {
-      var v = l === 'en' ? n.en : n.ar;
-      if (n.attr) n.el.setAttribute(n.attr, v); else n.el.innerHTML = v;
-    });
-    root.lang = l; root.dir = l === 'en' ? 'ltr' : 'rtl';
-    langBtn.textContent = l === 'en' ? 'العربية' : 'English';
-    langBtn.lang = l === 'en' ? 'ar' : 'en';
-    document.title = isProducts ? META[l].ptitle : META[l].title;
-    var md = document.querySelector('meta[name=description]');
-    if (md) md.setAttribute('content', isProducts ? META[l].pdesc : META[l].desc);
-    document.getElementById('copy').textContent = META[l].copy(new Date().getFullYear());
-    if (lbPrev) { lbPrev.textContent = l === 'en' ? '‹' : '›'; lbNext.textContent = l === 'en' ? '›' : '‹'; }
-    if (save) { try { localStorage.setItem('lang', l); } catch (e) {} }
-    document.dispatchEvent(new CustomEvent('langchange', { detail: l }));
+  function applyLang() {
+    langBtn.textContent = lang === 'en' ? 'العربية' : 'English';
+    langBtn.lang = lang === 'en' ? 'ar' : 'en';
+    var cp = document.getElementById('copy'); if (cp) cp.textContent = COPY[lang](new Date().getFullYear());
+    if (lbPrev) { lbPrev.textContent = lang === 'en' ? '‹' : '›'; lbNext.textContent = lang === 'en' ? '›' : '‹'; }
+    document.dispatchEvent(new CustomEvent('langchange', { detail: lang }));
   }
-  langBtn.addEventListener('click', function () { setLang(lang === 'ar' ? 'en' : 'ar', true); });
+  langBtn.addEventListener('click', function () {
+    var inEn = /^\/en(\/|$)/.test(location.pathname);
+    var page = location.pathname.split('/').pop() || 'index.html';
+    location.href = (inEn ? '/' : '/en/') + page + location.hash;
+  });
 
   // ---- menu page: filters + product cards ----
   var grid = document.getElementById('grid'), filtersEl = document.getElementById('filters');
   var activeCat = 'all';
-  var ORDER_URL = 'https://www.talabat.com/jordan';
+  var ORDER_URL = 'https://www.talabat.com/jordan/restaurant/798940/caucasus-sweets-home?aid=4922';
   function money(p, l) {
     return l === 'en' ? 'JD ' + p.toFixed(p % 1 ? 2 : 0)
       : new Intl.NumberFormat('ar-JO', { minimumFractionDigits: p % 1 ? 2 : 0, maximumFractionDigits: 2 }).format(p) + ' د.أ';
@@ -147,7 +130,7 @@
             return '<li class="tagchip"><span class="t-size">' + z[l] + '</span><b class="t-price">' + money(z.price, l) + '</b>' +
               (z.note ? '<em class="t-note">' + z.note[l] + '</em>' : '') + '</li>';
           }).join('') + '</ul>'
-        : '<p class="ask">' + tr('اسأل عن السعر', 'Ask for price') + '</p>';
+        : '<p class="ask">' + tr('السعر حسب الطلب', 'Price on request') + '</p>';
       return '<article class="mcard"><figure class="frame"><div class="pimg">' + media(p, l) + '</div></figure>' +
         '<div class="mbody"><h3>' + p.name[l] + '</h3><p class="mdesc">' + p.desc[l] + '</p>' +
         '<p class="pair">' + p.pair[l] + '</p>' + tags + '</div></article>';
@@ -178,9 +161,7 @@
     });
   }
 
-  var saved = null;
-  try { saved = localStorage.getItem('lang'); } catch (e) {}
-  setLang(saved === 'en' ? 'en' : 'ar', false);
+  applyLang();
 
   // ---- scroll reveal ----
   var items = document.querySelectorAll('.reveal');
@@ -252,6 +233,31 @@
     window.addEventListener('load', function () { buildAllRibbons(); });
     document.addEventListener('langchange', againR);
     buildAllRibbons();
+  }
+
+  // ---- quick order dock: WhatsApp / Call with a branch chooser ----
+  var dock = document.getElementById('dock'), cs = document.getElementById('cs');
+  if (dock && cs) {
+    var BR = [
+      { ar: 'المدينة الرياضية', en: 'Sports City', n: '962797181860', d: '07 9718 1860' },
+      { ar: 'شارع مكة', en: 'Mecca Street', n: '962796140001', d: '07 9614 0001' }
+    ];
+    var csT = cs.querySelector('.cs-t'), csL = cs.querySelector('.cs-list');
+    var closeCs = function () { cs.classList.remove('open'); setTimeout(function () { cs.hidden = true; }, 220); };
+    var openCs = function (act) {
+      var l = lang, wa = act === 'wa';
+      csT.textContent = wa ? (l === 'en' ? 'Choose a branch to message on WhatsApp' : 'اختر الفرع للمراسلة عبر واتساب')
+                           : (l === 'en' ? 'Choose a branch to call' : 'اختر الفرع للاتصال');
+      var msg = l === 'en' ? 'Hello, I would like to order from Caucasus Sweets Home' : 'مرحباً، بدّي أطلب من دار الحلويات القوقازية';
+      csL.innerHTML = BR.map(function (b) {
+        var href = wa ? 'https://wa.me/' + b.n + '?text=' + encodeURIComponent(msg) : 'tel:+' + b.n;
+        return '<a class="cs-row" href="' + href + '"' + (wa ? ' target="_blank" rel="noopener"' : '') + '><span class="cs-b">' + b[l] + '</span><span class="cs-n" dir="ltr">' + b.d + '</span></a>';
+      }).join('');
+      cs.hidden = false; setTimeout(function () { cs.classList.add('open'); }, 20);
+    };
+    dock.addEventListener('click', function (e) { var b = e.target.closest('[data-act]'); if (b) openCs(b.getAttribute('data-act')); });
+    cs.addEventListener('click', function (e) { if (e.target === cs || e.target.classList.contains('cs-x') || e.target.closest('.cs-row')) closeCs(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !cs.hidden) closeCs(); });
   }
 
   // ---- reels: play on hover (mouse), tap/click or when scrolled into view (touch) ----

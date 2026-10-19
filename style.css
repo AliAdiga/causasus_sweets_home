@@ -284,7 +284,7 @@ body.loading{overflow:hidden}
 .brand-logo{height:46px;width:auto;display:block}
 html[lang=en] .brand-name{display:none}
 .hero-logo{display:block;width:104px;height:auto;margin-bottom:14px}
-.load-logo{position:relative;width:min(250px,62vw);height:auto;filter:drop-shadow(0 0 22px rgba(224,168,74,.28));-webkit-mask-image:linear-gradient(90deg,#000 42%,transparent 58%);mask-image:linear-gradient(90deg,#000 42%,transparent 58%);-webkit-mask-size:260% 100%;mask-size:260% 100%;-webkit-mask-position:100% 0;mask-position:100% 0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;animation:wipe 1.5s .15s ease-out forwards,breathe 2.6s 1.7s ease-in-out infinite}
+.load-logo{position:relative;width:min(250px,62vw);height:auto;filter:drop-shadow(0 0 22px rgba(224,168,74,.28));-webkit-mask-image:linear-gradient(90deg,#000 42%,transparent 58%);mask-image:linear-gradient(90deg,#000 42%,transparent 58%);-webkit-mask-size:260% 100%;mask-size:260% 100%;-webkit-mask-position:100% 0;mask-position:100% 0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;animation:wipe .8s .05s ease-out forwards,breathe 2.6s 1s ease-in-out infinite}
 @keyframes wipe{to{-webkit-mask-position:0 0;mask-position:0 0}}
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
 .foot-logo{display:block;margin:0 auto 14px;width:112px;height:auto}
@@ -412,10 +412,10 @@ body{background-image:url(img/hex.svg);background-size:69.28px 120px}
 .site-header{background:linear-gradient(180deg,#fefaf2,#f8eedc);border-bottom:0;box-shadow:0 1px 0 rgba(201,138,43,.4),0 12px 26px -16px rgba(110,31,43,.3)}
 #story,#branches,.page-hero,.order{position:relative;overflow:hidden}
 #story>.wrap,#branches>.wrap,.page-hero>.wrap,.order>.wrap{position:relative;z-index:1}
-#story::before,#branches::before,.page-hero::before,.order::before{content:"";position:absolute;width:min(560px,70vw);aspect-ratio:560/535;background:url(img/logo-wine.png) center/contain no-repeat;opacity:.055;top:50%;pointer-events:none;z-index:0}
+#story::before,#branches::before,.page-hero::before,.order::before{content:"";position:absolute;width:min(560px,70vw);aspect-ratio:560/535;background:url(img/logo-wine.webp) center/contain no-repeat;opacity:.055;top:50%;pointer-events:none;z-index:0}
 #story::before{inset-inline-start:-140px;transform:translateY(-50%) rotate(-10deg)}
 #branches::before{inset-inline-end:-140px;transform:translateY(-50%) rotate(8deg)}
-.page-hero::before,.order::before{background-image:url(img/logo-white.png);opacity:.07;inset-inline-end:-120px;transform:translateY(-50%) rotate(8deg)}
+.page-hero::before,.order::before{background-image:url(img/logo-white.webp);opacity:.07;inset-inline-end:-120px;transform:translateY(-50%) rotate(8deg)}
 @media (max-width:860px){#story::before,#branches::before,.page-hero::before,.order::before{width:360px;inset-inline-start:auto;inset-inline-end:-120px}}
 
 /* soft section blending: no hard colour edge between sections */
@@ -426,7 +426,7 @@ body{background-image:url(img/hex.svg);background-size:69.28px 120px}
 .loader{--k:.46}
 .order::after,.page-hero::after,.loader::before{content:"";position:absolute;inset:12px;pointer-events:none;z-index:0;
   border:solid transparent;border-width:calc(180px * var(--k)) calc(240px * var(--k)) calc(287px * var(--k));
-  border-image:url(img/frame-cream.png) 108 144 172 144 stretch round;opacity:.92}
+  opacity:.92}
 .order{min-height:470px;display:flex;align-items:center}
 .order>.wrap{width:min(860px,100% - 260px)}
 .order-grid{grid-template-columns:1fr;justify-items:center;text-align:center;gap:22px}
@@ -521,3 +521,37 @@ body{background-image:url(img/hex.svg);background-size:69.28px 120px}
 
 /* loading screen: just the logo and its line of text */
 .loader::before,.loader::after,.ripples{display:none}
+
+
+/* ---------- quick order dock (WhatsApp / Call) ---------- */
+.dock{position:fixed;z-index:40;inset-inline-end:18px;bottom:18px;display:flex;flex-direction:column;gap:10px}
+.dk{border:0;cursor:pointer;font:inherit;font-weight:700;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;box-shadow:0 8px 20px rgba(52,32,28,.28);transition:transform .2s,box-shadow .2s}
+.dk:hover{transform:translateY(-2px)}
+.dk:focus-visible{outline:3px solid var(--honey);outline-offset:3px}
+.dk-wa{background:#1f9d55}
+.dk-call{background:var(--wine)}
+.dk-order{background:var(--honey)}
+/* desktop: two round icon buttons in the corner, text hidden (the top bar already has the order button) */
+.dock .dk{width:54px;height:54px;border-radius:50%}
+.dock .dk span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.dock .dk-order{display:none}
+.cs{position:fixed;inset:0;z-index:70;background:rgba(30,10,14,.55);display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .22s}
+.cs[hidden]{display:none}
+.cs.open{opacity:1}
+.cs-card{position:relative;width:min(440px,100%);background:var(--cream);border-radius:22px 22px 0 0;padding:26px 22px calc(26px + env(safe-area-inset-bottom));transform:translateY(24px);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.cs.open .cs-card{transform:none}
+.cs-t{font-size:1.05rem;color:var(--wine);margin-bottom:14px;padding-inline-end:34px}
+.cs-x{position:absolute;top:12px;inset-inline-end:14px;width:36px;height:36px;border:0;border-radius:50%;background:var(--tint);color:var(--wine);font-size:1.4rem;line-height:1;cursor:pointer}
+.cs-list{display:flex;flex-direction:column;gap:10px}
+.cs-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-radius:14px;background:#fff;border:1.5px solid var(--line);text-decoration:none;color:var(--ink);font-weight:700}
+.cs-row:hover,.cs-row:focus-visible{border-color:var(--wine)}
+.cs-n{color:var(--wine)}
+@media (min-width:600px){.cs{align-items:center}.cs-card{border-radius:22px}}
+@media (max-width:860px){
+  body{padding-bottom:74px}
+  .dock{inset-inline:0;bottom:0;flex-direction:row;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fbf5ec;box-shadow:0 -1px 0 rgba(201,138,43,.45),0 -10px 24px -14px rgba(110,31,43,.3)}
+  .dock .dk{width:auto;height:48px;border-radius:14px;flex:1;box-shadow:none;font-size:.95rem}
+  .dock .dk span{position:static;width:auto;height:auto;overflow:visible;clip:auto}
+  .dock .dk-order{display:inline-flex;flex:1.6}
+}
+@media (prefers-reduced-motion:reduce){.dk,.cs,.cs-card{transition:none}}

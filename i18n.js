@@ -1,5 +1,8 @@
 // Arabic source text (as written in index.html) -> English
 window.I18N_EN = {
+  'واتساب': 'WhatsApp',
+  'اتصل': 'Call',
+  'طلب سريع': 'Quick order',
   'جوزية بقلب كراميل… ما في أحلى': 'Walnut cookies with a caramel heart',
   'كرات شوكولاتة بتشوف حالها بالمراية': 'Chocolate balls admiring themselves',
   'ألبوم الحلا… ممنوع تتصفحه وإنت جوعان': 'The sweet photo album (do not browse while hungry)',
@@ -50,8 +53,8 @@ window.I18N_EN = {
   'تقييم Google': 'Google rating',
   '١٦٧': '167',
   'مراجعة': 'reviews',
-  '١٠ ص': '10 AM',
-  'نفتح كل يوم': 'opens daily',
+  '١٠ ص – ١٠ م': '10 AM – 10 PM',
+  'كل يوم': 'every day',
   'ما نحبّ أن نقدّمه لك': 'What we love to serve you',
   'كعكة العسل': 'Honey Cake',
   'الميدوفيك الأصلية: طبقات رقيقة بنكهة العسل مع كريمة ناعمة.': 'The original Medovik: thin honey-flavoured layers with smooth cream.',
@@ -75,7 +78,7 @@ window.I18N_EN = {
   'لحظات حلوة': 'Sweet moments',
   'حلويات قوقازية': 'Caucasian sweets',
   'زورونا في عمّان': 'Visit us in Amman',
-  'نفتح كل يوم الساعة ١٠ صباحاً': 'Open daily from 10 AM',
+  'نفتح كل يوم من ١٠ صباحاً حتى ١٠ مساءً': 'Open daily, 10 AM to 10 PM',
   'الزمخشري': 'Zamakhshari',
   'شارع الزمخشري، عمّان': 'Zamakhshari Street, Amman',
   'افتح الموقع على الخريطة': 'Open in Maps',
