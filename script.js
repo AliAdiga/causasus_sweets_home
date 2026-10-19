@@ -352,4 +352,7 @@
       show(cur + d, d);
     }, { passive: true });
   }
+
+  // ---- installable app: offline cache ----
+  if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
 })();
